@@ -58,7 +58,7 @@ def compute_res(input_file, output_name, hist_name, hist_type, plotGauss=True):
 
     hist_types = {"d0": "d_{0} (#mum)", "z0": "z_{0} (#mum)", "p": "Momentum resolution (%)", "k": "Curvature resolution (%)"}
     dummy = ROOT.TH1D("h", "h", 1, xMin, xMax)
-    dummy.GetXaxis().SetTitle(f"{hist_types[hist_type]} (um)")
+    dummy.GetXaxis().SetTitle(hist_types[hist_type])
     dummy.GetXaxis().SetRangeUser(xMin, xMax)
 
     dummy.GetXaxis().SetTitleFont(43)

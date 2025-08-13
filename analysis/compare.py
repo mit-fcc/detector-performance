@@ -15,7 +15,7 @@ ROOT.gStyle.SetOptTitle(0)
 parser = argparse.ArgumentParser()
 parser.add_argument("--card1", type=str, help="First card", default="IDEA_baseline")
 parser.add_argument("--card2", type=str, help="Second card", default="IDEA_VTXIB_r1_117")
-parser.add_argument("--output", type=str, help="Output", default="output_vtx")
+parser.add_argument("--output", type=str, help="Output", default="output")
 args = parser.parse_args()
 
 current_dir = os.path.abspath(os.getcwd())
@@ -123,8 +123,8 @@ def make_plot(card1, card2, output, hist_type):
     dummyB.GetXaxis().SetLabelOffset(3.0*dummyB.GetXaxis().GetLabelOffset())
 
     # y-axis
-    tmp = "d_{0}" if hist_type == "d0" else "z_{0}"
-    dummyT.GetYaxis().SetTitle(f"Resolution {tmp} (#mum)")
+    hist_types = {"d0": "d_{0} resolution (#mum)", "z0": "z_{0} resolution (#mum)", "p": "Momentum resolution (%)", "k": "Curvature resolution (%)"}
+    dummyT.GetYaxis().SetTitle(hist_types[hist_type])
     dummyB.GetYaxis().SetTitle("Ratio")
 
     dummyT.GetYaxis().SetRangeUser(ymin, ymax)
@@ -235,9 +235,9 @@ def make_plot(card1, card2, output, hist_type):
     pad2.Draw()
     pad2.SetFillStyle(0)
     pad2.cd()
-    dummyB.GetYaxis().SetRangeUser(yminr*0.98, ymaxr*1.02)
-    dummyB.SetMaximum(ymaxr*1.02)
-    dummyB.SetMinimum(yminr*0.98)
+    dummyB.GetYaxis().SetRangeUser(yminr*0.95, ymaxr*1.05)
+    dummyB.SetMaximum(ymaxr*1.05)
+    dummyB.SetMinimum(yminr*0.95)
     dummyB.Draw("HIST")
 
     line.Draw("SAME")
@@ -261,4 +261,7 @@ if __name__ == "__main__":
 
     make_plot(card1, card2, output, "d0")
     make_plot(card1, card2, output, "z0")
+    make_plot(card1, card2, output, "p")
+    make_plot(card1, card2, output, "k")
+
 
