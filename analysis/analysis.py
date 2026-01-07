@@ -41,8 +41,8 @@ def analysis(input_file, output_file):
     df = ROOT.RDataFrame("events", input_file)
 
 
-    df = df.Alias("MCRecoAssociations0", "_MCRecoAssociations_rec.index")
-    df = df.Alias("MCRecoAssociations1", "_MCRecoAssociations_sim.index")
+    df = df.Alias("MCRecoAssociations0", "_Particle_parents.index")
+    df = df.Alias("MCRecoAssociations1", "_Particle_daughters.index")
     df = df.Alias("Muons", "Muon_objIdx.index")
 
     df = df.Define("muons_all", "FCCAnalyses::ReconstructedParticle::get(Muons, ReconstructedParticles)")

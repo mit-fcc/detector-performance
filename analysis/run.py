@@ -246,7 +246,7 @@ def plot_summary(plots_path, theta_ranges, mom_ranges, hist_type):
         g.Draw("LP SAME")
 
     ymin_decade = 10**np.floor(np.log10(ymin))
-    ymax_decade = 10**np.ceil(np.log10(ymax))
+    ymax_decade = 10**np.ceil(np.log10(ymax*1.5))
 
     dummy.GetYaxis().SetRangeUser(ymin_decade, ymax_decade)
     dummy.SetMaximum(ymax_decade)

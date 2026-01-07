@@ -11,13 +11,17 @@ echo "Done!"
 
 
 echo "Install DelphesHEPMC3"
-source /cvmfs/sw.hsf.org/key4hep/setup.sh -r 2023-11-23
+#source /cvmfs/sw.hsf.org/key4hep/setup.sh -r 2023-11-23
+source /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh -r 2025-12-12
 
-git clone -b v00-06_fix https://github.com/jeyserma/k4SimDelphes.git
+#git clone -b v00-06_fix https://github.com/jeyserma/k4SimDelphes.git
+git clone https://github.com/jeyserma/k4SimDelphes.git
+#git clone -b v00-07-06 https://github.com/key4hep/k4SimDelphes.git
+
 cd k4SimDelphes
 mkdir build && cd build
 cmake .. -DCMAKE_INSTALL_PREFIX=../install
-make install
+make install -j ${nproc}
 
 cd ../install
 export PATH=$(pwd)/bin:${PATH}
