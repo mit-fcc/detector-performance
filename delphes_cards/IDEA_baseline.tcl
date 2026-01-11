@@ -1,3 +1,4 @@
+
 set RandomSeed 123
 
 ####################################################################                                l
@@ -730,9 +731,9 @@ module Efficiency MuonEfficiency {
 
   # efficiency formula for muons
   set EfficiencyFormula {
-        (energy < 0.5)                                         * (0.000)+
-        (energy >= 0.5) * (abs(eta) <= 0.88)                   * (0.99) +
-        (energy >= 0.5) * (abs(eta) >0.88 && abs(eta) <= 3.0)  * (0.99) +
+        (energy < 2.0)                                         * (0.000)+
+        (energy >= 2.0) * (abs(eta) <= 0.88)                   * (0.99) +
+        (energy >= 2.0) * (abs(eta) >0.88 && abs(eta) <= 3.0)  * (0.99) +
         (abs(eta) > 3.0)                                       * (0.000)
   }
 }

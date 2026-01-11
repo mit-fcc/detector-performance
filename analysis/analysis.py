@@ -28,7 +28,7 @@ bins_d0_um = (200000, -1000, 1000) # range mm, bins um
 bins_z0_um = (200000, -1000, 1000) # range mm, bins um
 
 bins_p = (250, 0, 250)
-bins_res_p = (10000, -0.05, 0.05)
+bins_res_p = (20000, -0.10, 0.10)
 bins_res_k = (10000, -0.005, 0.005)
 
 

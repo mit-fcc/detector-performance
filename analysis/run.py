@@ -21,7 +21,7 @@ parser.add_argument("--summary_plots", help="Run summary plots", action='store_t
 parser.add_argument("--display_commands", help="Display commands only, don't run", action='store_true')
 parser.add_argument("--delphes_card", type=str, help="Delphes detector card name (as in delphes_cards directory)", default="IDEA_baseline")
 parser.add_argument("--output_dir", type=str, help="Output directory", default="output")
-parser.add_argument("--nThreads", type=int, help="Number of threads", default=12)
+parser.add_argument("--nThreads", type=int, help="Number of threads", default=256)
 args = parser.parse_args()
 
 current_dir = os.path.abspath(os.getcwd())
@@ -110,7 +110,7 @@ def detector_response(input_dir, output_dir, delphes_card):
     def helper_response(hepmc):
         filename, _ = os.path.splitext(hepmc)
         cmd = [
-            "DelphesHepMC_EDM4HEP",
+            "DelphesHepMC3_EDM4HEP",
             delphes_card,
             f"{current_dir}/bin/delphes_output.tcl",
             f"{output_dir}/{filename}.root",
