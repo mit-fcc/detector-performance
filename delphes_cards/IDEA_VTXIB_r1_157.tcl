@@ -1,4 +1,3 @@
-
 set RandomSeed 123
 
 ####################################################################                                l
@@ -13,7 +12,7 @@ set RandomSeed 123
 
 ## MOD2: set vtx mode timing to MC truth
 
-set B 3.0
+set B 2.0
 set R 2.25
 set HL 2.5
 
@@ -226,7 +225,7 @@ module TrackCovariance TrackSmearing {
       # barrel  name       zmin   zmax   r        w (m)      X0        n_meas  th_up (rad) th_down (rad)    reso_up (m)   reso_down (m)  flag
 
       1 PIPE -100 100 0.01 0.00241 0.35276 0 0 0 0 0 0
-      1 VTXLOW -0.0965 0.0965 0.0137 0.000309 0.0937 2 0 1.5708 3e-06 3e-06 1
+      1 VTXLOW -0.0965 0.0965 0.0157 0.000309 0.0937 2 0 1.5708 3e-06 3e-06 1
       1 VTXLOW -0.1609 0.1609 0.0237 0.000309 0.0937 2 0 1.5708 3e-06 3e-06 1
       1 VTXLOW -0.257 0.257 0.0340 0.000309 0.0937 2 0 1.5708 3e-06 3e-06 1
       1 VTXHIGH -0.1631 0.1631 0.141 0.000415 0.0937 2 0 1.5708 3e-06 3e-06 1
@@ -731,9 +730,9 @@ module Efficiency MuonEfficiency {
 
   # efficiency formula for muons
   set EfficiencyFormula {
-        (energy < 2.0)                                         * (0.000)+
-        (energy >= 2.0) * (abs(eta) <= 0.88)                   * (0.99) +
-        (energy >= 2.0) * (abs(eta) >0.88 && abs(eta) <= 3.0)  * (0.99) +
+        (energy < 0.5)                                         * (0.000)+
+        (energy >= 0.5) * (abs(eta) <= 0.88)                   * (0.99) +
+        (energy >= 0.5) * (abs(eta) >0.88 && abs(eta) <= 3.0)  * (0.99) +
         (abs(eta) > 3.0)                                       * (0.000)
   }
 }
@@ -797,7 +796,7 @@ module FastJetFinder GenJetFinderDurhamN2 {
   # algorithm: 11 ee-durham kT algorithm
   # ref: https://indico.cern.ch/event/1173562/contributions/4929025/attachments/2470068/4237859/2022-06-FCC-jets.pdf
   # to run exclusive njet mode set NJets to int
-  # to run exclusive dcut mode set DCut to float
+  # to run exclusive dcut mode set DCut to float
   # if DCut > 0 will run in dcut mode
 
   set JetAlgorithm 11
@@ -819,7 +818,7 @@ module FastJetFinder FastJetFinderDurhamN2 {
   # algorithm: 11 ee-durham kT algorithm
   # ref: https://indico.cern.ch/event/1173562/contributions/4929025/attachments/2470068/4237859/2022-06-FCC-jets.pdf
   # to run exclusive njet mode set NJets to int
-  # to run exclusive dcut mode set DCut to float
+  # to run exclusive dcut mode set DCut to float
   # if DCut > 0 will run in dcut mode
 
   set JetAlgorithm 11
