@@ -14,7 +14,7 @@ ROOT.gStyle.SetOptTitle(0)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--card1", type=str, help="First card", default="IDEA_baseline")
-parser.add_argument("--card2", type=str, help="Second card", default="IDEA_VTXIB_r1_117")
+parser.add_argument("--card2", type=str, help="Second card", default="IDEA_baseline_3T")
 parser.add_argument("--output", type=str, help="Output", default="output")
 args = parser.parse_args()
 
@@ -194,6 +194,7 @@ def make_plot(card1, card2, output, hist_type):
     for ig, key in enumerate(fIn.GetListOfKeys()):
         obj = key.ReadObj()
         if obj.InheritsFrom("TGraph"):
+            print(obj.GetName())
             obj.SetMarkerStyle(22)
             obj.SetMarkerSize(1.2)
             obj.SetName(obj.GetName() + "card2")

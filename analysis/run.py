@@ -21,7 +21,7 @@ parser.add_argument("--summary_plots", help="Run summary plots", action='store_t
 parser.add_argument("--display_commands", help="Display commands only, don't run", action='store_true')
 parser.add_argument("--delphes_card", type=str, help="Delphes detector card name (as in delphes_cards directory)", default="IDEA_baseline")
 parser.add_argument("--output_dir", type=str, help="Output directory", default="output")
-parser.add_argument("--nThreads", type=int, help="Number of threads", default=256)
+parser.add_argument("--nThreads", type=int, help="Number of threads", default=128)
 args = parser.parse_args()
 
 current_dir = os.path.abspath(os.getcwd())
@@ -48,7 +48,7 @@ pdg_dict = {
     18:  "nu_tau'",       -18: "nu_tau'_bar",
 }
 
-def generate_gun_cards(input_dir, theta_range, mom_range, pid, nevents = 100000, npart = 1):
+def generate_gun_cards(input_dir, theta_range, mom_range, pid, nevents = 100000, npart = 1, R0=0, z0=0):
 
     def helper_ranges():
         for theta in theta_range:
@@ -62,6 +62,8 @@ def generate_gun_cards(input_dir, theta_range, mom_range, pid, nevents = 100000,
             f.write(f"theta_range {theta}.0,{theta}.0\n")
             f.write(f"mom_range {mom}.0,{mom}.0\n")
             f.write(f"pid_list {pid}\n")
+            f.write(f"R0 {R0}\n")
+            f.write(f"z0 {z0}\n")
             f.write(f"nevents {nevents}\n")
 
         print(f"Generated {filename}")
@@ -237,9 +239,9 @@ def plot_summary(plots_path, theta_ranges, mom_ranges, hist_type):
             with open(f"{plots_path}/{hist_type}_{pdg_dict[particle_id]}_theta_{theta}_p_{mom}.json") as json_file:
                 data = json.load(json_file)
                 res = data['res_quantile']
-                if res < ymin:
+                if res < ymin and res != 0:
                     ymin = res
-                if res > ymax:
+                if res > ymax and res != 0:
                     ymax = res
             g.SetPoint(j, cost, res)
         graphs.append(g)
@@ -267,7 +269,8 @@ if __name__ == "__main__":
 
     # configuration of the gun
     theta_ranges = [10, 20, 30, 40, 50, 60, 70, 80, 90]
-    mom_ranges = [2, 5, 10, 50, 100]
+    mom_ranges = [5, 10, 50, 100]
+    R0, z0 = 20, 0 # displacement of track
     particle_id = 13
     nevents = 100000 # number of events
     npart = 1 # particles per event
@@ -288,7 +291,7 @@ if __name__ == "__main__":
     if args.gun:
         os.makedirs(gun_path, exist_ok=True)
         os.makedirs(hepmc_path, exist_ok=True)
-        generate_gun_cards(gun_path, theta_range=theta_ranges, mom_range=mom_ranges, pid=particle_id, nevents=nevents, npart=npart)
+        generate_gun_cards(gun_path, theta_range=theta_ranges, mom_range=mom_ranges, pid=particle_id, nevents=nevents, npart=npart, R0=R0, z0=z0)
         generate_gun_events(gun_path, hepmc_path)
 
     if args.delphes:

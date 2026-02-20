@@ -1,5 +1,5 @@
 
-source /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh -r 2026-01-11
+source /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh -r 2026-02-09 
 
 cd "$(dirname "${BASH_SOURCE[0]}")/k4SimDelphes/install/"
 export PATH=$(pwd)/bin:${PATH}

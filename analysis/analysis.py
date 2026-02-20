@@ -56,23 +56,31 @@ def analysis(input_file, output_file):
     muon_res_p = df.Histo1D(("muon_res_p", "", *bins_res_p), "muon_res_p")
     muon_res_k = df.Histo1D(("muon_res_k", "", *bins_res_k), "muon_res_k")
 
+    # get gen D0 and Z0
+    #df = df.Define("D0_gen", "FCCAnalyses::get_D0_gen(muons_all, MCRecoAssociations0, MCRecoAssociations1, ReconstructedParticles, Particle, 0)")
+    #df = df.Define("Z0_gen", "FCCAnalyses::get_Z0_gen(muons_all, MCRecoAssociations0, MCRecoAssociations1, ReconstructedParticles, Particle, 0)")
 
+    # calculate_d0_z0_gen
+    df = df.Define("d0_z0_gen", "FCCAnalyses::calculate_d0_z0_gen(Particle, magFieldBz)")
+    df = df.Define("D0_gen", "d0_z0_gen[0]")
+    df = df.Define("Z0_gen", "d0_z0_gen[1]")
 
-    # get the track fit parameters
-    df = df.Define("RP_TRK_D0", "ReconstructedParticle2Track::getRP2TRK_D0(ReconstructedParticles, _EFlowTrack_trackStates)") # d0 in mm
-    df = df.Define("RP_TRK_Z0", "ReconstructedParticle2Track::getRP2TRK_Z0(ReconstructedParticles, _EFlowTrack_trackStates)") # z0 in mm
-    df = df.Define("RP_TRK_omega", "ReconstructedParticle2Track::getRP2TRK_omega(ReconstructedParticles, _EFlowTrack_trackStates)")  # rho, in mm-1
-    df = df.Define("RP_TRK_phi", "ReconstructedParticle2Track::getRP2TRK_phi(ReconstructedParticles, _EFlowTrack_trackStates)")
-    df = df.Define("RP_TRK_tanlambda", "ReconstructedParticle2Track::getRP2TRK_tanLambda(ReconstructedParticles, _EFlowTrack_trackStates)")
+    # get the track fit parameters (assume particles are muons)
+    df = df.Define("RP_TRK_D0", "ReconstructedParticle2Track::getRP2TRK_D0(muons_all, _EFlowTrack_trackStates) - D0_gen") # d0 in mm
+    #df = df.Filter("std::cout << RP_TRK_D0 << std::endl; return true;")
+    df = df.Define("RP_TRK_Z0", "ReconstructedParticle2Track::getRP2TRK_Z0(muons_all, _EFlowTrack_trackStates) - Z0_gen") # z0 in mm
+    df = df.Define("RP_TRK_omega", "ReconstructedParticle2Track::getRP2TRK_omega(muons_all, _EFlowTrack_trackStates)")  # rho, in mm-1
+    df = df.Define("RP_TRK_phi", "ReconstructedParticle2Track::getRP2TRK_phi(muons_all, _EFlowTrack_trackStates)")
+    df = df.Define("RP_TRK_tanlambda", "ReconstructedParticle2Track::getRP2TRK_tanLambda(muons_all, _EFlowTrack_trackStates)")
     df = df.Define("RP_TRK_D0_um", "RP_TRK_D0 * 1000.0")
     df = df.Define("RP_TRK_Z0_um", "RP_TRK_Z0 * 1000.0")
 
     # get the errors on the track parameters
-    df = df.Define("RP_TRK_D0_cov", "ReconstructedParticle2Track::getRP2TRK_D0_cov(ReconstructedParticles, _EFlowTrack_trackStates)")
-    df = df.Define("RP_TRK_Z0_cov", "ReconstructedParticle2Track::getRP2TRK_Z0_cov(ReconstructedParticles, _EFlowTrack_trackStates)")
-    df = df.Define("RP_TRK_omega_cov", "ReconstructedParticle2Track::getRP2TRK_omega_cov(ReconstructedParticles, _EFlowTrack_trackStates)")
-    df = df.Define("RP_TRK_phi_cov", "ReconstructedParticle2Track::getRP2TRK_phi_cov(ReconstructedParticles, _EFlowTrack_trackStates)")
-    df = df.Define("RP_TRK_tanlambda_cov", "ReconstructedParticle2Track::getRP2TRK_tanLambda_cov(ReconstructedParticles, _EFlowTrack_trackStates)")
+    df = df.Define("RP_TRK_D0_cov", "ReconstructedParticle2Track::getRP2TRK_D0_cov(muons_all, _EFlowTrack_trackStates)")
+    df = df.Define("RP_TRK_Z0_cov", "ReconstructedParticle2Track::getRP2TRK_Z0_cov(muons_all, _EFlowTrack_trackStates)")
+    df = df.Define("RP_TRK_omega_cov", "ReconstructedParticle2Track::getRP2TRK_omega_cov(muons_all, _EFlowTrack_trackStates)")
+    df = df.Define("RP_TRK_phi_cov", "ReconstructedParticle2Track::getRP2TRK_phi_cov(muons_all, _EFlowTrack_trackStates)")
+    df = df.Define("RP_TRK_tanlambda_cov", "ReconstructedParticle2Track::getRP2TRK_tanLambda_cov(muons_all, _EFlowTrack_trackStates)")
 
     h_RP_TRK_D0 = df.Histo1D(("RP_TRK_D0", "", *bins_d0), "RP_TRK_D0")
     h_RP_TRK_Z0 = df.Histo1D(("RP_TRK_Z0", "", *bins_z0), "RP_TRK_Z0")

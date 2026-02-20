@@ -42,8 +42,8 @@ double get_mass(int pid) {
 }
 
 void generate_event(int iEv, WriterAscii& writer, const std::vector<int>& pid_list, 
-                    int npart, const std::vector<float>& theta_range, 
-                    const std::vector<float>& mom_range) {
+                    int npart, const std::vector<double>& theta_range, 
+                    const std::vector<double>& mom_range, double R0=0, double z0=0.) {
     // Create a random number generator
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -51,17 +51,31 @@ void generate_event(int iEv, WriterAscii& writer, const std::vector<int>& pid_li
     // Create a new event
     GenEvent evt(Units::GEV, Units::MM);
 
-    // Create a vertex at the origin
-    GenVertexPtr v = std::make_shared<GenVertex>();
 
-    GenParticlePtr p1 = make_shared<GenParticle>(FourVector (0.0,    0.0,   125.0,  125.0  ),11,  3);
-    GenParticlePtr p2 = make_shared<GenParticle>(FourVector (0.0,    0.0,   -125.0,  125.0  ),11,  3);
-
-    v->add_particle_in(p1);
-    v->add_particle_in(p2);
 
     // Loop over each particle
     for (int i = 0; i < npart; i++) {
+
+        // Generate random phi (for momemtum and vtx position)
+        //std::uniform_real_distribution<> phi_dist(-M_PI, M_PI);
+        std::uniform_real_distribution<> phi_dist(0, M_PI);
+        double phi = phi_dist(gen);
+        //phi = M_PI/2;
+
+        // place vertex in same line as 
+        double x = R0 * cos(phi);
+        double y = R0 * sin(phi);
+
+        // Create a vertex at the origin
+        GenVertexPtr v = std::make_shared<GenVertex>();
+        v->set_position(HepMC3::FourVector(x, y, z0, 0));
+
+        GenParticlePtr p1 = make_shared<GenParticle>(FourVector (0.0,    0.0,   125.0,  125.0  ),11,  3);
+        GenParticlePtr p2 = make_shared<GenParticle>(FourVector (0.0,    0.0,   -125.0,  125.0  ),-11,  3);
+
+        v->add_particle_in(p1);
+        v->add_particle_in(p2);
+
         // Generate random PID
         std::uniform_int_distribution<> pid_dist(0, pid_list.size() - 1);
         int pid = pid_list[pid_dist(gen)];
@@ -69,11 +83,8 @@ void generate_event(int iEv, WriterAscii& writer, const std::vector<int>& pid_li
 
         // Generate random theta
         std::uniform_real_distribution<> theta_dist(theta_range[0], theta_range[1]);
-        float theta = theta_dist(gen) * 2.0*M_PI/360.;
+        double theta = theta_dist(gen) * 2.0*M_PI/360.;
 
-        // Generate random phi
-        std::uniform_real_distribution<> phi_dist(-M_PI, M_PI);
-        float phi = phi_dist(gen);
 
         // Create the particle
 
@@ -82,14 +93,14 @@ void generate_event(int iEv, WriterAscii& writer, const std::vector<int>& pid_li
 
         // Generate random momentum
         std::uniform_real_distribution<> log_mom_dist(log(mom_range[0]), log(mom_range[1]));
-        float momp = exp(log_mom_dist(gen));
+        double momp = exp(log_mom_dist(gen));
 
          //std::cout<<"  "<<i<<","<<pid<<","<<momp<<","<<etap<<","<<phip<<"\n";
         // Compute px, py, pz, E
-        float px = momp * sin(theta) * cos(phi);
-        float py = momp * sin(theta) * sin(phi);
-        float pz = momp * cos(theta);
-        float e = sqrt(px*px + py*py + pz*pz + mass*mass);
+        double px = momp * sin(theta) * cos(phi);
+        double py = momp * sin(theta) * sin(phi);
+        double pz = momp * cos(theta);
+        double e = sqrt(px*px + py*py + pz*pz + mass*mass);
 
         // Create the particle
         GenParticlePtr particle = make_shared<GenParticle>(FourVector(px, py, pz, e), pid, 1);
@@ -98,9 +109,10 @@ void generate_event(int iEv, WriterAscii& writer, const std::vector<int>& pid_li
         //v->add_particle_in(particle);
         v->add_particle_out(particle);
 
+        evt.add_vertex(v);
+        
     }
 
-    evt.add_vertex(v);
     evt.set_event_number(iEv);
 
     // Write the event to the file
@@ -144,21 +156,24 @@ int main(int argc, char** argv) {
     }
     
     // Convert nevents from string to int
-    float nevents = std::stof(config["nevents"]);
+    double nevents = std::stof(config["nevents"]);
 
     // Convert npart from string to int
     int npart = std::stof(config["npart"]);
 
-    // Convert theta_range from string to vector<float>
-    std::vector<float> theta_range;
+    double R0 = std::stof(config["R0"]);
+    double z0 = std::stof(config["z0"]);
+
+    // Convert theta_range from string to vector<double>
+    std::vector<double> theta_range;
     std::istringstream eta_range_stream(config["theta_range"]);
     std::string eta;
     while (std::getline(eta_range_stream, eta, ',')) {
         theta_range.push_back(std::stof(eta));
     }
 
-    // Convert mom_range from string to vector<float>
-    std::vector<float> mom_range;
+    // Convert mom_range from string to vector<double>
+    std::vector<double> mom_range;
     std::istringstream mom_range_stream(config["mom_range"]);
     std::string mom;
     while (std::getline(mom_range_stream, mom, ',')) {
@@ -182,13 +197,13 @@ int main(int argc, char** argv) {
 
 
     std::cout << "theta_range: ";
-    for (float theta : theta_range) {
+    for (double theta : theta_range) {
         std::cout << theta << " ";
     }
     std::cout << "\n";
 
     std::cout << "mom_range: ";
-    for (float mom : mom_range) {
+    for (double mom : mom_range) {
         std::cout << mom << " ";
     }
     std::cout << "\n";
@@ -204,7 +219,7 @@ int main(int argc, char** argv) {
 
     // Generate and write n events
     for (int i = 0; i < nevents; i++) {
-        generate_event(i, writer, pid_list, npart, theta_range, mom_range);
+        generate_event(i, writer, pid_list, npart, theta_range, mom_range, R0, z0);
     }
 
     writer.close();  // This will add the "HepMC::Asciiv3-END_EVENT_LISTING" line
